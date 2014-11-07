@@ -56,7 +56,7 @@ $queue = "queue";
 $user = $_POST['user'];
 if(empty($user))
 {
-    echo "user is empty";
+    echo "error! user is empty";
     exit("");
 }
 $logName = "pair_log";
@@ -66,17 +66,18 @@ $result = $redis->get('pair'.$user);
 if(!empty($result))
 {
     #已经被匹配上了呵呵直接返回
-    var_dump($result); 
-    echo result;
+    file_put_contents($logName,print_r((__LINE__).':'.$user.'has been pair!'.$result.'|'."\r\n",true),FILE_APPEND);
+//第一步先查看下是否自己已经被匹配删了
     //删除匹配结果
-    $result = $redis->delete('pair'.$user);
+    echo $result; 
+   # $result = $redis->delete('pair'.$user);
     exit();
 }
 $current_user = $redis->get($queue);
 if(empty($current_user))
 {
     $redis->set($queue,$user);
-    echo $user."enter queue,just waiting others to make pair";
+    echo $user."error! enter queue,just waiting others to make pair";
     exit("");
 }
 
@@ -86,7 +87,7 @@ file_put_contents($logName,print_r((__LINE__).':'.'login user:'.$user."\r\n",tru
 
 if($current_user == $user)
 {
-    echo $user."has been in  queue,just waiting others to make pair";
+    echo $user."error! has been in  queue,just waiting others to make pair";
     exit("");
 }
 
