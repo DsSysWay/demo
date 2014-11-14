@@ -144,6 +144,7 @@ else
     file_put_contents($logName,print_r((__LINE__).':'.'Obj_single_have:'.count($Obj_single_have)."\r\n",true),FILE_APPEND);
    file_put_contents($logName,print_r((__LINE__).':'.'applist_by_makepair:'.$final_result,true),FILE_APPEND);
    echo $final_result;
+   file_put_contents($logName,print_r((__LINE__).':'.'make pair response success',true),FILE_APPEND);
    //配对完毕，清理队列等待数据
  #  $redis->delete($queue);
 

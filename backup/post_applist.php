@@ -85,12 +85,6 @@ $result = $redis->set($user,$array_string);
 
 file_put_contents($logName,print_r((__LINE__).":".$result,true),FILE_APPEND);
 
-$backgroud = $_POST['wall'];
-if(!empty($backgroud))
-{
-    saveImage($user,$backgroud,"backgroud");
-    file_put_contents($logName,print_r((__LINE__).":".$backgroud,true),FILE_APPEND);
-}
 
 echo "success";
 
