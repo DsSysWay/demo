@@ -47,7 +47,6 @@ double rad(double d)
 }
 HASH_CONTAINER Hash;
 MYSQL mysql;
-#define direction 6
 
 void init()
 {
@@ -59,7 +58,7 @@ void init()
 
 
 //初始化geo  hash表
-void construct_geo_hash()
+void construct_geo_hash(int direction)
 {
     init();
     MYSQL_RES  *result;
@@ -100,15 +99,16 @@ double distance(double lat1,double lng1,double lat2,double lng2)
 
 int main(int argc,char **argv)
 {
-    vector<Feed>  result;
-     construct_geo_hash();
      if(argc != 4 )  
      {
          cout <<"argc param num limit ,must input lng & lat"<<endl;
          return -1;
      }
+    vector<Feed>  result;
     double lng = atol(argv[1]);
     double lat = atol(argv[2]);
+    int direction = atol(argv[3]);
+     construct_geo_hash(direction);
     char *hash = geohash_encode(lat,lng,direction);
     //获取neighbor 结点
     char** neighbors = geohash_neighbors(hash);
@@ -136,4 +136,9 @@ int main(int argc,char **argv)
         }
     }
     cout << "result size:"<<result.size()<<endl;
+    size = result.size();
+    for(int i = 0; i < size; i++)
+    {
+      cout<< " lng:"<<result[i].lng<<" lat:"<<result[i].lat<<" distance: "<<result[i].dis<<" content:"<< result[i].content<<endl; 
+    }
 }
