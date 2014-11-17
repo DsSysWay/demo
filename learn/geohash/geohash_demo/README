@@ -1,0 +1,19 @@
+编译指令：
+g++ -o get_neighbor_feeds get_neighbor_feeds.cpp  geohash.c -g  -lmysqlclient
+####g++ -o get_neighbor_feeds get_neighbor_feeds.cpp  geohash.c   -lmysqlclient -g -L./geolib/ -lgeohash 
+-g选项方便本地gdb
+
+get_neighbor_feeds  main function 
+
+
+table create sql:
+
+
+| weibo | CREATE TABLE `weibo` (
+        `id` int(4) NOT NULL AUTO_INCREMENT,
+        `content` varchar(1024) NOT NULL,
+        `address_loc` point NOT NULL,
+        PRIMARY KEY (`id`),
+        SPATIAL KEY `address_loc` (`address_loc`)
+        ) ENGINE=MyISAM AUTO_INCREMENT=28931 DEFAULT CHARSET=utf8 |
+
