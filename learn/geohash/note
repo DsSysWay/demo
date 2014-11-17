@@ -1,0 +1,12 @@
+c++连接mysql 需要预装下mysql-client.
+在引用的文件里要include的头文件书写规范为<mysql/mysql.h>
+
+编译的时候如果想要顺利链接到对应的静态库，需要在shell中执行
+mysql_config  --libs  来自mysql_config 的输出会明确告诉你需要在链接命令上
+指定的库.
+这里只需要在编译的时候在后面加上 -lmysqlclient就行
+mysql一个好的书写习惯是在连接mysql进行操作前，声明好需要设定的字符集。
+设置方式如下：
+int ret = mysql_set_character_set(&mysql,"utf8");  
+由于mysql是芬兰作者写的，用了坑爹的latine作为默认的编码方式
+需要从建表到默认的所有编码方式都改为utf8。这样子可以避免乱码问题
