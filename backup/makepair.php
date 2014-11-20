@@ -20,7 +20,7 @@ function isInObjList($applist,$packagename)
 }
 
 //return value is json_encode  string
-function constructJsonUnit($user,$diff_applist,$all_applist)
+function constructJsonUnit($user,$diff_applist,$common_applist,$I_single_have)
 {
     $diff_data = array();
     $length = count($diff_applist);
@@ -31,19 +31,29 @@ function constructJsonUnit($user,$diff_applist,$all_applist)
         $unit = array('name'=>$item['name'],'version'=>$item['version'],'packagename'=>$item['packagename'],'versionname'=>$item['versionname']);
         array_push($diff_data,$unit);
     }
-
-    $data = array();
-    $length = count($all_applist);
+    $my_diff = array();
+    $length = count($I_single_have)
 
     for($i=0; $i<$length;$i++)
     {
-        $item = $all_applist[$i];
+        $item = $I_single_have[$i];
+        $unit = array('name'=>$item['name'],'version'=>$item['version'],'packagename'=>$item['packagename'],'versionname'=>$item['versionname']);
+        array_push($my_diff,$unit);
+    }
+
+    $data = array();
+    $length = count($common_applist);
+
+    for($i=0; $i<$length;$i++)
+    {
+        $item = $common_applist[$i];
         $unit = array('name'=>$item['name'],'version'=>$item['version'],'packagename'=>$item['packagename'],'versionname'=>$item['versionname']);
         array_push($data,$unit);
     }
 
     //还差返回username
-    $res = array('user'=>$user,'diff_applist'=>$diff_data,"all_applist"=>$data); 
+    //我独有，对方独有,共有的applist
+    $res = array('user'=>$user,'my_diff_applist'=>$my_diff,'obj_diff_applist'=>$diff_data,"common_applist"=>$data); 
     $json_res = json_encode($res);
     return $json_res;
 
@@ -100,7 +110,8 @@ else
     $obj_applist_str = $redis->get($current_user); 
     $my_applist = json_decode($my_applist_str,true);
     $obj_applist = json_decode($obj_applist_str,true);
-
+    //存储公共的列表
+    $common_have = array();
     $myLength = count($my_applist);
     for($i = 0; $i < $myLength; $i++)
     {
@@ -109,6 +120,10 @@ else
         if($res == FALSE)
         {
             array_push($I_single_have,$item); 
+        }
+        else
+        {
+            array_push($common_have,$item); 
         }
 
     }
@@ -133,14 +148,14 @@ else
     #$my_pair_res = serialize($Obj_single_have); 
     #$redis->set('pair'.$user,$my_pair_res);
     #存储被匹配对象的匹配结果供匹配对象拉到
-    $pair_obj_res = constructJsonUnit($user,$I_single_have,$my_applist);
+    $pair_obj_res = constructJsonUnit($user,$I_single_have,$common_have,$Obj_single_have);
     file_put_contents($logName,print_r((__LINE__).':'.'I_single_have:'.count($I_single_have)."\r\n",true),FILE_APPEND);
     file_put_contents($logName,print_r((__LINE__).':'.'applist_by_makepair:'.$pair_obj_res."\r\n",true),FILE_APPEND);
     $redis->set('pair'.$current_user,$pair_obj_res);
 
 
 
-   $final_result = constructJsonUnit($current_user,$Obj_single_have,$obj_applist);
+   $final_result = constructJsonUnit($current_user,$Obj_single_have,$common_have,$I_single_have);
     file_put_contents($logName,print_r((__LINE__).':'.'Obj_single_have:'.count($Obj_single_have)."\r\n",true),FILE_APPEND);
    file_put_contents($logName,print_r((__LINE__).':'.'applist_by_makepair:'.$final_result,true),FILE_APPEND);
    echo $final_result;
